@@ -54,7 +54,7 @@ class _HomePageState extends State<HomePage> {
           switch (snapshot.connectionState) {
             case ConnectionState.done:
               final user = FirebaseAuth.instance.currentUser;
-              if (user?.emailVerified??false) {
+              if (user?.emailVerified ?? false) {
                 print('you ara a verified user');
               } else {
                 print('you need to verify your email first');
@@ -64,7 +64,7 @@ class _HomePageState extends State<HomePage> {
               return Column(
                 children: const [
                   CircularProgressIndicator(),
-                  Text('Lodding...'),
+                  Text('Lodding'),
                 ],
               );
           }
