@@ -64,7 +64,7 @@ class _HomePageState extends State<HomePage> {
               return Column(
                 children: const [
                   CircularProgressIndicator(),
-                  Text('Lodding...'),
+                  Text('Lodding...1234'),
                 ],
               );
           }
