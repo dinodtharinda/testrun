@@ -23,24 +23,6 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  late final TextEditingController _email;
-
-  late final TextEditingController _password;
-
-  @override
-  void initState() {
-    _email = TextEditingController();
-    _password = TextEditingController();
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    _email.dispose();
-    _password.dispose();
-    super.dispose();
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -54,12 +36,11 @@ class _HomePageState extends State<HomePage> {
           switch (snapshot.connectionState) {
             case ConnectionState.done:
               final user = FirebaseAuth.instance.currentUser;
-              if (user?.emailVerified??false) {
-                print('you ara a verified user');
+              if (user!.emailVerified) {
+                return const Text('done');
               } else {
-                print('you need to verify your email first');
+                return const Center(child: LoginView());
               }
-              return Text(FirebaseAuth.instance.currentUser!.email.toString());
             default:
               return Column(
                 children: const [
@@ -71,5 +52,28 @@ class _HomePageState extends State<HomePage> {
         },
       ),
     );
+  }
+}
+
+class VerifyEmailView extends StatefulWidget {
+  const VerifyEmailView({Key? key}) : super(key: key);
+
+  @override
+  State<VerifyEmailView> createState() => _VerifyEmailViewState();
+}
+
+class _VerifyEmailViewState extends State<VerifyEmailView> {
+  @override
+  Widget build(BuildContext context) {
+    return Column(children: [
+      const Text('Please Verify your email'),
+      TextButton(
+        onPressed: () async {
+          final user = FirebaseAuth.instance.currentUser;
+          await user?.sendEmailVerification();
+        },
+        child: const Text('Send Email verification'),
+      )
+    ]);
   }
 }
