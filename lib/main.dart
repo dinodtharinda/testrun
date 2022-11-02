@@ -9,10 +9,16 @@ import 'view/register_view.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  runApp(const MaterialApp(
-    title: 'Flutter Demo',
-    home: HomePage(),
-  ));
+  runApp(
+    MaterialApp(
+      title: 'Flutter Demo',
+      home: const HomePage(),
+      routes: {
+        '/login/': (context) => const LoginView(),
+        '/register/': (context) => const RegisterView()
+      },
+    ),
+  );
 }
 
 class HomePage extends StatefulWidget {
@@ -25,32 +31,31 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Home'),
-      ),
-      body: FutureBuilder(
-        future: Firebase.initializeApp(
-            options: DefaultFirebaseOptions.currentPlatform),
-        builder: (BuildContext context, AsyncSnapshot snapshot) {
-          switch (snapshot.connectionState) {
-            case ConnectionState.done:
-              final user = FirebaseAuth.instance.currentUser;
-              if (user!.emailVerified) {
-                return const Text('done');
-              } else {
-                return const Center(child: LoginView());
-              }
-            default:
-              return Column(
+    return FutureBuilder(
+      future: Firebase.initializeApp(
+          options: DefaultFirebaseOptions.currentPlatform),
+      builder: (BuildContext context, AsyncSnapshot snapshot) {
+        switch (snapshot.connectionState) {
+          case ConnectionState.done:
+            final user = FirebaseAuth.instance.currentUser;
+            //   if (user!.emailVerified) {
+            //     return const Text('done');
+            //   } else {
+            //     return const Center(child: VerifyEmailView());
+            //   }
+            return const LoginView();
+          default:
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: const [
                   CircularProgressIndicator(),
                   Text('Lodding...'),
                 ],
-              );
-          }
-        },
-      ),
+              ),
+            );
+        }
+      },
     );
   }
 }
@@ -65,15 +70,32 @@ class VerifyEmailView extends StatefulWidget {
 class _VerifyEmailViewState extends State<VerifyEmailView> {
   @override
   Widget build(BuildContext context) {
-    return Column(children: [
-      const Text('Please Verify your email'),
-      TextButton(
-        onPressed: () async {
-          final user = FirebaseAuth.instance.currentUser;
-          await user?.sendEmailVerification();
-        },
-        child: const Text('Send Email verification'),
-      )
-    ]);
+    return Scaffold(
+      body: Center(
+        child: Column(
+          children: [
+            Container(
+              margin: const EdgeInsets.only(top: 70, bottom: 280),
+              child: const Text(
+                'Verify email',
+                style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold),
+              ),
+            ),
+            Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+              const Text('Please Verify your email'),
+              TextButton(
+                onPressed: () async {
+                  await Firebase.initializeApp(
+                      options: DefaultFirebaseOptions.currentPlatform);
+                  final user = FirebaseAuth.instance.currentUser;
+                  await user?.sendEmailVerification();
+                },
+                child: const Text('Send email verification'),
+              )
+            ]),
+          ],
+        ),
+      ),
+    );
   }
 }
