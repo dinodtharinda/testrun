@@ -39,13 +39,6 @@ class _VerifyEmailViewState extends State<VerifyEmailView> {
                 },
                 child: const Text('Send email verification'),
               ),
-              TextButton(
-                onPressed: () async {
-                  Navigator.of(context)
-                      .pushNamedAndRemoveUntil('/register/', (route) => false);
-                },
-                child: const Text('New User'),
-              )
             ]),
           ],
         ),
