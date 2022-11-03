@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../firebase_options.dart';
+import 'dart:developer' as devtools show log;
 
 class LoginView extends StatefulWidget {
   const LoginView({Key? key}) : super(key: key);
@@ -32,18 +33,17 @@ class _LoginViewState extends State<LoginView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SingleChildScrollView(
+      appBar: AppBar(title:const Center(child:  Text('Login', style: TextStyle(color: Colors.black ,fontSize: 40,fontWeight: FontWeight.bold),)),backgroundColor:Colors.white10,elevation: 0,),
+      body: SafeArea(
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Container(
-              margin: const EdgeInsets.only(top: 70,bottom: 230),
-              child:  const Text('Login',style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold),),
-            ),
             Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                  margin:
+                      const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                   padding: const EdgeInsets.symmetric(horizontal: 10),
                   decoration: BoxDecoration(
                       border: Border.all(width: 1),
@@ -62,7 +62,8 @@ class _LoginViewState extends State<LoginView> {
                   ),
                 ),
                 Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                  margin:
+                      const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                   padding: const EdgeInsets.symmetric(horizontal: 10),
                   decoration: BoxDecoration(
                       border: Border.all(width: 1),
@@ -82,31 +83,19 @@ class _LoginViewState extends State<LoginView> {
                 ),
                 TextButton(
                   onPressed: () async {
-                    await  Firebase.initializeApp(
-            options: DefaultFirebaseOptions.currentPlatform);
+                    await Firebase.initializeApp(
+                        options: DefaultFirebaseOptions.currentPlatform);
                     final email = _email.text;
                     final password = _password.text;
                     try {
-                      await FirebaseAuth.instance.signInWithEmailAndPassword(
-                          email: email, password: password);
-          
-                      var snackbar = SnackBar(
-                          content: const Text('Logged In'),
-                          elevation: 16,
-                          backgroundColor: const Color.fromARGB(255, 27, 171, 51),
-                          behavior: SnackBarBehavior.floating,
-                          margin: const EdgeInsets.all(10),
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(15)),
-                          duration: const Duration(seconds: 10),
-                          action: SnackBarAction(
-                            label: 'Dismiss',
-                            textColor: Colors.black,
-                            onPressed: () {
-                              ScaffoldMessenger.of(context).hideCurrentSnackBar();
-                            },
-                          ));
-                      ScaffoldMessenger.of(context).showSnackBar(snackbar);
+                      final userCredential = await FirebaseAuth.instance
+                          .signInWithEmailAndPassword(
+                              email: email, password: password);
+      
+                      devtools.log(userCredential.toString());
+                       Navigator.of(context).pushNamedAndRemoveUntil(
+                        '/home/', (route) => false);
+                
                     } on FirebaseAuthException catch (e) {
                       var errorMsg = ' error';
                       print(e.code);
@@ -128,7 +117,8 @@ class _LoginViewState extends State<LoginView> {
                       var snackbar = SnackBar(
                           content: Text(errorMsg),
                           elevation: 16,
-                          backgroundColor: const Color.fromARGB(255, 234, 15, 15),
+                          backgroundColor:
+                              const Color.fromARGB(255, 234, 15, 15),
                           behavior: SnackBarBehavior.floating,
                           margin: const EdgeInsets.all(10),
                           shape: RoundedRectangleBorder(
@@ -138,7 +128,8 @@ class _LoginViewState extends State<LoginView> {
                             label: 'Dismiss',
                             textColor: Colors.black,
                             onPressed: () {
-                              ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                              ScaffoldMessenger.of(context)
+                                  .hideCurrentSnackBar();
                             },
                           ));
                       ScaffoldMessenger.of(context).showSnackBar(snackbar);
@@ -146,7 +137,8 @@ class _LoginViewState extends State<LoginView> {
                       var snackbar = SnackBar(
                           content: Text(e.toString()),
                           elevation: 16,
-                          backgroundColor: const Color.fromARGB(255, 234, 15, 15),
+                          backgroundColor:
+                              const Color.fromARGB(255, 234, 15, 15),
                           behavior: SnackBarBehavior.floating,
                           margin: const EdgeInsets.all(10),
                           shape: RoundedRectangleBorder(
@@ -156,7 +148,8 @@ class _LoginViewState extends State<LoginView> {
                             label: 'Dismiss',
                             textColor: Colors.black,
                             onPressed: () {
-                              ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                              ScaffoldMessenger.of(context)
+                                  .hideCurrentSnackBar();
                             },
                           ));
                       ScaffoldMessenger.of(context).showSnackBar(snackbar);
@@ -167,8 +160,8 @@ class _LoginViewState extends State<LoginView> {
                 TextButton(
                   onPressed: () {
                     ScaffoldMessenger.of(context).hideCurrentSnackBar();
-                    Navigator.of(context)
-                        .pushNamedAndRemoveUntil('/register/', (route) => false);
+                    Navigator.of(context).pushNamedAndRemoveUntil(
+                        '/register/', (route) => false);
                   },
                   child: const Text('Not registered yet? Register here!'),
                 )

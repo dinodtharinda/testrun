@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../firebase_options.dart';
+import 'dart:developer' as devtools show log;
 
 class RegisterView extends StatefulWidget {
   const RegisterView({Key? key}) : super(key: key);
@@ -93,29 +94,13 @@ class _RegisterViewState extends State<RegisterView> {
                     final email = _email.text;
                     final password = _password.text;
                     try {
-                      await FirebaseAuth.instance
+                   final userCredential = await FirebaseAuth.instance
                           .createUserWithEmailAndPassword(
                               email: email, password: password);
 
-                      var snackbar = SnackBar(
-                          content: const Text('Registered'),
-                          elevation: 16,
-                          backgroundColor:
-                              const Color.fromARGB(255, 27, 171, 51),
-                          behavior: SnackBarBehavior.floating,
-                          margin: const EdgeInsets.all(10),
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(15)),
-                          duration: const Duration(seconds: 10),
-                          action: SnackBarAction(
-                            label: 'Dismiss',
-                            textColor: Colors.black,
-                            onPressed: () {
-                              ScaffoldMessenger.of(context)
-                                  .hideCurrentSnackBar();
-                            },
-                          ));
-                      ScaffoldMessenger.of(context).showSnackBar(snackbar);
+                                 devtools.log(userCredential.toString());
+
+                     
                     } on FirebaseAuthException catch (e) {
                       var errorMsg = ' error';
                       print(e.code);
