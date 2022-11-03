@@ -80,7 +80,7 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  Color mainColor = Colors.white10;
+  Color mainColor = Colors.transparent;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -102,8 +102,20 @@ class _HomeState extends State<Home> {
             elevation: 2,
             shape:
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-            onSelected: ((value) {
-              devtools.log(value.toString());
+            onSelected: ((value) async {
+              switch (value) {
+                case MenuAction.logout:
+                  final shouldLogout = await showLogOutDialog(context);
+                  if (shouldLogout) {
+                    // await FirebaseAuth.instance.signOut();
+                    Navigator.of(context)
+                        .pushNamedAndRemoveUntil('/login/', (route) => false);
+                  }
+                  break;
+                case MenuAction.more:
+                  // TODO: Handle this case.
+                  break;
+              }
             }),
             itemBuilder: (context) {
               return const [
@@ -123,4 +135,33 @@ class _HomeState extends State<Home> {
       body: const Text('hello world'),
     );
   }
+}
+
+Future<bool> showLogOutDialog(BuildContext context) {
+  return showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          elevation: 2,
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          title: const Text('Sign Out'),
+          content: const Text('Are you sure you want to sign out?'),
+          actions: [
+            TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop(false);
+                },
+                child: const Text('Cancel')),
+            TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop(true);
+                },
+                child: const Text(
+                  'Log Out',
+                  style: TextStyle(color: Colors.red),
+                )),
+          ],
+        );
+      }).then((value) => value ?? false);
 }
