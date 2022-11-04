@@ -108,7 +108,7 @@ class _HomeState extends State<Home> {
                 case MenuAction.logout:
                   final shouldLogout = await showLogOutDialog(context);
                   if (shouldLogout) {
-                    // await FirebaseAuth.instance.signOut();
+                    await FirebaseAuth.instance.signOut();
                     Navigator.of(context)
                         .pushNamedAndRemoveUntil('/login/', (route) => false);
                   }
