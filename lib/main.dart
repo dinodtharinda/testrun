@@ -19,7 +19,8 @@ void main() {
       routes: {
         loginRoute: (context) => const LoginView(),
         registerRoute: (context) => const RegisterView(),
-        homeRoute:(context) =>const Home()
+        homeRoute:(context) =>const Home(),
+        verifyEmailRoute:(context) =>const VerifyEmailView(),
       },
     ),
   );
@@ -51,11 +52,6 @@ class _MyAppState extends State<MyApp> {
             } else {
               return const LoginView();
             }
-          //   if (user!.emailVerified) {
-          //     return const Text('done');
-          //   } else {
-          //     return const Center(child: VerifyEmailView());
-          //   }
           default:
             return Center(
               child: Column(
