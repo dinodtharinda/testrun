@@ -7,6 +7,8 @@ import 'package:test_run/constanst/routes.dart';
 import '../firebase_options.dart';
 import 'dart:developer' as devtools show log;
 
+import '../utilities/show_error_dialog.dart';
+
 class RegisterView extends StatefulWidget {
   const RegisterView({Key? key}) : super(key: key);
 
@@ -95,13 +97,11 @@ class _RegisterViewState extends State<RegisterView> {
                     final email = _email.text;
                     final password = _password.text;
                     try {
-                   final userCredential = await FirebaseAuth.instance
+                      final userCredential = await FirebaseAuth.instance
                           .createUserWithEmailAndPassword(
                               email: email, password: password);
 
-                                 devtools.log(userCredential.toString());
-
-                     
+                      devtools.log(userCredential.toString());
                     } on FirebaseAuthException catch (e) {
                       var errorMsg = ' error';
                       print(e.code);
@@ -122,43 +122,9 @@ class _RegisterViewState extends State<RegisterView> {
                       } else {
                         errorMsg = e.code;
                       }
-                      var snackbar = SnackBar(
-                          content: Text(errorMsg),
-                          elevation: 16,
-                          backgroundColor:
-                              const Color.fromARGB(255, 234, 15, 15),
-                          behavior: SnackBarBehavior.floating,
-                          margin: const EdgeInsets.all(10),
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(15)),
-                          duration: const Duration(seconds: 10),
-                          action: SnackBarAction(
-                            label: 'Dismiss',
-                            textColor: Colors.black,
-                            onPressed: () {
-                              ScaffoldMessenger.of(context)
-                                  .hideCurrentSnackBar();
-                            },
-                          ));
-                      ScaffoldMessenger.of(context).showSnackBar(snackbar);
+                      await showErrorMsg('Login Error', errorMsg, context);
                     } catch (e) {
-                      var snackbar = SnackBar(
-                          content: Text(e.runtimeType.toString()),
-                          elevation: 16,
-                          backgroundColor: Colors.blueGrey,
-                          behavior: SnackBarBehavior.floating,
-                          margin: const EdgeInsets.all(10),
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(25)),
-                          duration: const Duration(seconds: 10),
-                          action: SnackBarAction(
-                            label: 'Dismiss',
-                            onPressed: () {
-                              ScaffoldMessenger.of(context)
-                                  .hideCurrentSnackBar();
-                            },
-                          ));
-                      ScaffoldMessenger.of(context).showSnackBar(snackbar);
+                      await showErrorMsg('Login Error', e.toString(), context);
                     }
                   },
                   child: const Text('Register'),

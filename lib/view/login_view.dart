@@ -6,6 +6,8 @@ import 'package:test_run/constanst/routes.dart';
 import '../firebase_options.dart';
 import 'dart:developer' as devtools show log;
 
+import '../utilities/show_error_dialog.dart';
+
 class LoginView extends StatefulWidget {
   const LoginView({Key? key}) : super(key: key);
 
@@ -34,7 +36,16 @@ class _LoginViewState extends State<LoginView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title:const Center(child:  Text('Login', style: TextStyle(color: Colors.black ,fontSize: 40,fontWeight: FontWeight.bold),)),backgroundColor:Colors.white10,elevation: 0,),
+      appBar: AppBar(
+        title: const Center(
+            child: Text(
+          'Login',
+          style: TextStyle(
+              color: Colors.black, fontSize: 40, fontWeight: FontWeight.bold),
+        )),
+        backgroundColor: Colors.white10,
+        elevation: 0,
+      ),
       body: SafeArea(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -92,11 +103,10 @@ class _LoginViewState extends State<LoginView> {
                       final userCredential = await FirebaseAuth.instance
                           .signInWithEmailAndPassword(
                               email: email, password: password);
-      
+
                       devtools.log(userCredential.toString());
-                       Navigator.of(context).pushNamedAndRemoveUntil(
-                        '/home/', (route) => false);
-                
+                      Navigator.of(context)
+                          .pushNamedAndRemoveUntil('/home/', (route) => false);
                     } on FirebaseAuthException catch (e) {
                       var errorMsg = ' error';
                       print(e.code);
@@ -115,45 +125,9 @@ class _LoginViewState extends State<LoginView> {
                       } else {
                         errorMsg = e.code;
                       }
-                      var snackbar = SnackBar(
-                          content: Text(errorMsg),
-                          elevation: 16,
-                          backgroundColor:
-                              const Color.fromARGB(255, 234, 15, 15),
-                          behavior: SnackBarBehavior.floating,
-                          margin: const EdgeInsets.all(10),
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(15)),
-                          duration: const Duration(seconds: 10),
-                          action: SnackBarAction(
-                            label: 'Dismiss',
-                            textColor: Colors.black,
-                            onPressed: () {
-                              ScaffoldMessenger.of(context)
-                                  .hideCurrentSnackBar();
-                            },
-                          ));
-                      ScaffoldMessenger.of(context).showSnackBar(snackbar);
+                      await showErrorMsg('Error', errorMsg, context);
                     } catch (e) {
-                      var snackbar = SnackBar(
-                          content: Text(e.toString()),
-                          elevation: 16,
-                          backgroundColor:
-                              const Color.fromARGB(255, 234, 15, 15),
-                          behavior: SnackBarBehavior.floating,
-                          margin: const EdgeInsets.all(10),
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(15)),
-                          duration: const Duration(seconds: 10),
-                          action: SnackBarAction(
-                            label: 'Dismiss',
-                            textColor: Colors.black,
-                            onPressed: () {
-                              ScaffoldMessenger.of(context)
-                                  .hideCurrentSnackBar();
-                            },
-                          ));
-                      ScaffoldMessenger.of(context).showSnackBar(snackbar);
+                      await showErrorMsg('Error', e.toString(), context);
                     }
                   },
                   child: const Text('Login'),
