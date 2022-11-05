@@ -3,6 +3,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:test_run/constanst/routes.dart';
 import 'package:test_run/view/login_view.dart';
 import 'package:test_run/view/verify_email_view.dart';
 import 'firebase_options.dart';
@@ -16,9 +17,9 @@ void main() {
       title: 'Flutter Demo',
       home: const MyApp(),
       routes: {
-        '/login/': (context) => const LoginView(),
-        '/register/': (context) => const RegisterView(),
-        '/home/':(context) =>const Home()
+        loginRoute: (context) => const LoginView(),
+        registerRoute: (context) => const RegisterView(),
+        homeRoute:(context) =>const Home()
       },
     ),
   );
@@ -110,7 +111,7 @@ class _HomeState extends State<Home> {
                   if (shouldLogout) {
                     await FirebaseAuth.instance.signOut();
                     Navigator.of(context)
-                        .pushNamedAndRemoveUntil('/login/', (route) => false);
+                        .pushNamedAndRemoveUntil(loginRoute, (route) => false);
                   }
                   break;
                 case MenuAction.more:

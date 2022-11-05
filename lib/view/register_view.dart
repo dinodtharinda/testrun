@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:test_run/constanst/routes.dart';
 import '../firebase_options.dart';
 import 'dart:developer' as devtools show log;
 
@@ -166,7 +167,7 @@ class _RegisterViewState extends State<RegisterView> {
                   onPressed: () {
                     ScaffoldMessenger.of(context).hideCurrentSnackBar();
                     Navigator.of(context)
-                        .pushNamedAndRemoveUntil('/login/', (route) => false);
+                        .pushNamedAndRemoveUntil(loginRoute, (route) => false);
                   },
                   child: const Text('Already registered? Login here!'),
                 )
