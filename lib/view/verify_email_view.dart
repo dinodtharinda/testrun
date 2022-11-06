@@ -1,9 +1,10 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:test_run/constanst/routes.dart';
+import 'package:test_run/services/auth/auth_exception.dart';
+import 'package:test_run/services/auth/auth_service.dart';
 import 'package:test_run/utilities/show_error_dialog.dart';
-import '../firebase_options.dart';
 
 class VerifyEmailView extends StatefulWidget {
   const VerifyEmailView({Key? key}) : super(key: key);
@@ -46,16 +47,15 @@ class _VerifyEmailViewState extends State<VerifyEmailView> {
               TextButton(
                 onPressed: () async {
                   try {
-                    await Firebase.initializeApp(
-                        options: DefaultFirebaseOptions.currentPlatform);
-                    final user = FirebaseAuth.instance.currentUser;
-                    await user?.sendEmailVerification();
-                    if (user!.emailVerified) {
+                    final user = AuthService.firebase().currentUser;
+                    await AuthService.firebase().sendEmailVerification();
+                    if (user!.isEmailVerified) {
                       Navigator.of(context).pushNamedAndRemoveUntil(
                           loginRoute, (route) => false);
                     }
-                  } on FirebaseAuthException catch (e) {
-                    showErrorMsg('Error', e.code, context);
+                  } 
+                  on UserNotLoggedInAuthException {
+                    showErrorMsg('Error', 'user not Logged in', context);
                   } catch (e) {
                     showErrorMsg('Error', e.toString(), context);
                   }
@@ -64,7 +64,7 @@ class _VerifyEmailViewState extends State<VerifyEmailView> {
               ),
               TextButton(
                 onPressed: () async {
-                  await FirebaseAuth.instance.signOut();
+                  await AuthService.firebase().logOut();
                   Navigator.of(context)
                       .pushNamedAndRemoveUntil(registerRoute, (route) => false);
                 },

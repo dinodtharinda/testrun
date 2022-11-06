@@ -1,10 +1,9 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'package:flutter/material.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:test_run/constanst/routes.dart';
-import '../firebase_options.dart';
+import 'package:test_run/services/auth/auth_exception.dart';
+import 'package:test_run/services/auth/auth_service.dart';
 import 'dart:developer' as devtools show log;
 import '../utilities/show_error_dialog.dart';
 
@@ -91,40 +90,27 @@ class _RegisterViewState extends State<RegisterView> {
                 ),
                 TextButton(
                   onPressed: () async {
-                    await Firebase.initializeApp(
-                        options: DefaultFirebaseOptions.currentPlatform);
                     final email = _email.text;
                     final password = _password.text;
+                    var errorMsg = ' error';
                     try {
-                      await FirebaseAuth.instance
-                          .createUserWithEmailAndPassword(
-                              email: email, password: password);
-                      final user = FirebaseAuth.instance.currentUser;
-                      await user?.sendEmailVerification();
+                      await AuthService.firebase()
+                          .createUser(email: email, password: password);
+                      AuthService.firebase().currentUser;
+                      await AuthService.firebase().sendEmailVerification();
                       Navigator.pushNamed(context, verifyEmailRoute);
-                    } on FirebaseAuthException catch (e) {
-                      var errorMsg = ' error';
-                      print(e.code);
-                      if (e.code == 'user-not-found') {
-                        errorMsg = 'User not found!';
-                      } else if (e.code == 'unknown') {
-                        errorMsg = 'Please enter Email and Password!';
-                      } else if (e.code == 'email-already-in-use') {
-                        errorMsg = 'This email is already in use!';
-                      } else if (e.code == 'invalid-email') {
-                        errorMsg = 'Invalid Email!';
-                      } else if (e.code == 'weak-password') {
-                        errorMsg = 'Weak password!';
-                      } else if (e.code == 'too-many-requests') {
-                        errorMsg = 'Please try again later!';
-                      } else if (e.code == 'network-request-failed') {
-                        errorMsg = 'Please Connect Network';
-                      } else {
-                        errorMsg = e.code;
-                      }
+                    } on EmailAlredyUseAuthException {
+                      errorMsg = 'This email is already in use!';
                       await showErrorMsg('Login Error', errorMsg, context);
-                    } catch (e) {
-                      await showErrorMsg('Login Error', e.toString(), context);
+                    } on InvaidEmailAuthException {
+                      errorMsg = 'Invalid Email!';
+                      await showErrorMsg('Login Error', errorMsg, context);
+                    } on WeakPasswordAuthException {
+                      errorMsg = 'Weak password!';
+                      await showErrorMsg('Login Error', errorMsg, context);
+                    } on GenericAuthException {
+                      await showErrorMsg(
+                          'Login Error', 'Authentication error', context);
                     }
                   },
                   child: const Text('Register'),

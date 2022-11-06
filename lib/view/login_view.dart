@@ -1,11 +1,8 @@
 // ignore_for_file: use_build_context_synchronously
 import 'package:flutter/material.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:test_run/constanst/routes.dart';
-import '../firebase_options.dart';
-import 'dart:developer' as devtools show log;
-
+import 'package:test_run/services/auth/auth_exception.dart';
+import 'package:test_run/services/auth/auth_service.dart';
 import '../utilities/show_error_dialog.dart';
 
 class LoginView extends StatefulWidget {
@@ -95,43 +92,32 @@ class _LoginViewState extends State<LoginView> {
                 ),
                 TextButton(
                   onPressed: () async {
-                    await Firebase.initializeApp(
-                        options: DefaultFirebaseOptions.currentPlatform);
                     final email = _email.text;
                     final password = _password.text;
+                    var errorMsg = 'error';
                     try {
-                      await FirebaseAuth.instance.signInWithEmailAndPassword(
-                          email: email, password: password);
-                      final user = FirebaseAuth.instance.currentUser;
-                      if (user?.emailVerified ?? false) {
+                    await  AuthService.firebase()
+                          .login(email: email, password: password);
+                      final user = AuthService.firebase().currentUser;
+                      if (user?.isEmailVerified ?? false) {
                         Navigator.of(context).pushNamedAndRemoveUntil(
                             homeRoute, (route) => false);
                       } else {
-                   
                         Navigator.of(context).pushNamedAndRemoveUntil(
                             verifyEmailRoute, (route) => false);
                       }
-                    } on FirebaseAuthException catch (e) {
-                      var errorMsg = ' error';
-                      print(e.code);
-                      if (e.code == 'user-not-found') {
-                        errorMsg = 'User not found!';
-                      } else if (e.code == 'unknown') {
-                        errorMsg = 'Please enter Email and Password!';
-                      } else if (e.code == 'wrong-password') {
-                        errorMsg = 'Wrong password!';
-                      } else if (e.code == 'invalid-email') {
-                        errorMsg = 'Invalid Email!';
-                      } else if (e.code == 'too-many-requests') {
-                        errorMsg = 'Please try again later!';
-                      } else if (e.code == 'network-request-failed') {
-                        errorMsg = 'Please Connect Network';
-                      } else {
-                        errorMsg = e.code;
-                      }
+                    } on UserNotFoundAuthException {
+                      errorMsg = 'User not found!';
                       await showErrorMsg('Error', errorMsg, context);
-                    } catch (e) {
-                      await showErrorMsg('Error', e.toString(), context);
+                    } on WrongPasswordAuthException {
+                      errorMsg = 'Wrong password!';
+                      await showErrorMsg('Error', errorMsg, context);
+                    } on InvaidEmailAuthException {
+                      errorMsg = 'Invalid Email!';
+                      await showErrorMsg('Error', errorMsg, context);
+                    }  on GenericAuthException {
+                      await showErrorMsg(
+                          'Login Error','Authentication Error', context);
                     }
                   },
                   child: const Text('Login'),
