@@ -96,7 +96,7 @@ class _LoginViewState extends State<LoginView> {
                     final password = _password.text;
                     var errorMsg = 'error';
                     try {
-                    await  AuthService.firebase()
+                      await AuthService.firebase()
                           .login(email: email, password: password);
                       final user = AuthService.firebase().currentUser;
                       if (user?.isEmailVerified ?? false) {
@@ -115,9 +115,9 @@ class _LoginViewState extends State<LoginView> {
                     } on InvaidEmailAuthException {
                       errorMsg = 'Invalid Email!';
                       await showErrorMsg('Error', errorMsg, context);
-                    }  on GenericAuthException {
+                    } on GenericAuthException {
                       await showErrorMsg(
-                          'Login Error','Authentication Error', context);
+                          'Login Error', 'Authentication Error', context);
                     }
                   },
                   child: const Text('Login'),
