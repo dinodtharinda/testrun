@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:test_run/services/auth/auth_service.dart';
+import 'package:test_run/services/crud/notes_service.dart';
 import '../constanst/routes.dart';
 import '../enums/menu_action.dart';
 
@@ -11,7 +12,21 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  Color mainColor = Colors.transparent;
+  late final NotesService _notesService;
+  String get userEmail => AuthService.firebase().currentUser!.email!;
+
+  @override
+  void initState() {
+    _notesService = NotesService();
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _notesService.close();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -21,7 +36,7 @@ class _HomeState extends State<Home> {
           style: TextStyle(
               color: Colors.black, fontSize: 30, fontWeight: FontWeight.bold),
         ),
-        backgroundColor: mainColor,
+        backgroundColor: Colors.transparent,
         elevation: 0,
         actions: [
           PopupMenuButton<MenuAction>(
@@ -63,8 +78,29 @@ class _HomeState extends State<Home> {
           )
         ],
       ),
-      body: const Text('hello world'),
-      
+      body: FutureBuilder(
+        future: _notesService.getOrCreateUser(email: userEmail),
+        builder: (BuildContext context, AsyncSnapshot snapshot) {
+          switch (snapshot.connectionState) {
+            case ConnectionState.done:
+              return StreamBuilder(
+                stream: _notesService.allNote,
+                builder: (BuildContext context, AsyncSnapshot snapshot) {
+                  switch (snapshot.connectionState) {
+                    case ConnectionState.done:
+                      return const Text('Waiting for all notes');
+                    default:
+                      return const Center(
+                        child: CircularProgressIndicator(),
+                      );
+                  }
+                },
+              );
+            default:
+              return const Center(child: CircularProgressIndicator());
+          }
+        },
+      ),
     );
   }
 }
