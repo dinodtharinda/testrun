@@ -1,14 +1,14 @@
 // ignore_for_file: use_build_context_synchronously
 
-
 import 'package:flutter/material.dart';
+import 'package:path/path.dart';
 import 'package:test_run/constanst/routes.dart';
 import 'package:test_run/services/auth/auth_service.dart';
 import 'package:test_run/view/login_view.dart';
+import 'package:test_run/view/notes/new_note_view.dart';
 import 'package:test_run/view/verify_email_view.dart';
-import 'view/home_view.dart';
+import 'view/notes/notes_view.dart';
 import 'view/register_view.dart';
-
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -21,6 +21,7 @@ void main() {
         registerRoute: (context) => const RegisterView(),
         homeRoute: (context) => const Home(),
         verifyEmailRoute: (context) => const VerifyEmailView(),
+        newNoteRoute: (context) => const NewNoteView()
       },
     ),
   );

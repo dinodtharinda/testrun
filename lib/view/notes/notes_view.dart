@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:test_run/services/auth/auth_service.dart';
 import 'package:test_run/services/crud/notes_service.dart';
-import '../constanst/routes.dart';
-import '../enums/menu_action.dart';
+import '../../constanst/routes.dart';
+import '../../enums/menu_action.dart';
 
 class Home extends StatefulWidget {
   const Home({Key? key}) : super(key: key);
@@ -32,14 +32,24 @@ class _HomeState extends State<Home> {
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          'Home',
+          'Your Notes',
           style: TextStyle(
               color: Colors.black, fontSize: 30, fontWeight: FontWeight.bold),
         ),
         backgroundColor: Colors.transparent,
         elevation: 0,
         actions: [
+          IconButton(
+            onPressed: () => Navigator.of(context).pushNamed(newNoteRoute),
+            icon: const Icon(
+              Icons.add,
+              color: Colors.black,
+              size: 30,
+            ),
+            tooltip: 'New Note',
+          ),
           PopupMenuButton<MenuAction>(
+            iconSize: 30,
             tooltip: 'Menu',
             icon: const Icon(
               Icons.more_vert_sharp,
@@ -58,17 +68,10 @@ class _HomeState extends State<Home> {
                         .pushNamedAndRemoveUntil(loginRoute, (route) => false);
                   }
                   break;
-                case MenuAction.more:
-                  // TODO: Handle this case.
-                  break;
               }
             }),
             itemBuilder: (context) {
               return const [
-                PopupMenuItem<MenuAction>(
-                  value: MenuAction.more,
-                  child: Text('More'),
-                ),
                 PopupMenuItem<MenuAction>(
                   value: MenuAction.logout,
                   child: Text('Log Out'),
@@ -87,7 +90,7 @@ class _HomeState extends State<Home> {
                 stream: _notesService.allNote,
                 builder: (BuildContext context, AsyncSnapshot snapshot) {
                   switch (snapshot.connectionState) {
-                    case ConnectionState.done:
+                    case ConnectionState.waiting:
                       return const Text('Waiting for all notes');
                     default:
                       return const Center(
